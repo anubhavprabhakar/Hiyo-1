@@ -1,24 +1,29 @@
 import 'dart:math';
+import 'expense_class.dart'; //custom defined
 
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:fake_async/fake_async.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final appTitle = 'Flutter Form Demo';
-    return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(appTitle),
-        ),
-        body: MyCustomForm(),
-      ),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     final appTitle = 'Flutter Form Demo';
+//     return MaterialApp(
+//       title: appTitle,
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: Text(appTitle),
+//         ),
+//         body: MyCustomForm(),
+//       ),
+//     );
+//   }
+// }
 
 // Create a Form widget.
 class MyCustomForm extends StatefulWidget {
@@ -36,8 +41,10 @@ class MyCustomFormState extends State<MyCustomForm> {
   final _formKey = GlobalKey<FormState>();
   final items = ['category1', 'category2', 'category3'];
   String? value;
+
   TextEditingController amountController = TextEditingController();   //add class and object to store this variables
   TextEditingController dateController = TextEditingController();   //store the terminal info in object
+  //TextEditingController categoryController = TextEditingController(); //store selected category
 
   @override
   DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
@@ -68,7 +75,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                 labelText: 'Date',
               ),
               validator: (String? value) {
-                if (value == null || value!.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return 'Please enter valid date';
                 }
                 return null;
@@ -88,11 +95,19 @@ class MyCustomFormState extends State<MyCustomForm> {
                 hintText: 'Enter amount',
                 labelText: 'Amount',
               ),
+
+              // next 3 lines of code are to open numerical keyboard, and not character keyboard
+              // so that parsing amount input(text) into num wont throw exception
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly],
+
               validator: (String? value) {
                 if (value!.isEmpty) {
                   return 'Please enter valid amount';
                 }
                 return null;
+
               },
             ),
           ),
@@ -123,7 +138,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             ),
           ),
 
-          //Save
+          //Save button
           Container(
             //height: 50,
             // decoration: BoxDecoration(
@@ -146,11 +161,17 @@ class MyCustomFormState extends State<MyCustomForm> {
                           borderRadius: BorderRadius.circular(12.0),
                           side: BorderSide(color: Colors.red))),
                 ),
-                onPressed: () {
-                  print(dateController.text);
-                  print(amountController.text);
+                onPressed: () async {
+
+                  var data1 = Expense_class(dateController.text, amountController.text, value);
+
+                  // print(dateController.text);
+                  // print(amountController.text);
+                  // print(value);
+
                   // It returns true if the form is valid, otherwise returns false
                   if (_formKey.currentState!.validate()) {
+                    // await Future<String>.delayed(const Duration(seconds: 2));
                     // If the form is valid, display a Snackbar.
                     Scaffold.of(context).showSnackBar(
                         SnackBar(content: Text('Data is in processing.')));

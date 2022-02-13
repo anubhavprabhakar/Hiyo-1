@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hiyo">
+    package="com.example.newhiyo">
    <application
-        android:label="hiyo"
+        android:label="newhiyo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
